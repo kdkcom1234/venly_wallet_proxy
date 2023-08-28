@@ -29,18 +29,28 @@
         );
 
         const result = await venlyConnect.checkAuthenticated();
+
         result
           .authenticated((auth) => {
             const state = document.querySelector("div > span");
-
-            if (window.flutterHandler) {
-              window.flutterHandler.postMessage(JSON.stringify(auth));
-              state.innerHTML = "Connected";
-            } else {
-              state.innerHTML = `Connected!<br>${auth.subject}`;
-            }
-
-            venlyConnect.flows.manageWallets("BSC");
+            venlyConnect.api.getWallets().then((wallets) => {
+              console.log(wallets);
+              if (wallets.length === 0) {
+                venlyConnect.flows.manageWallets("BSC");
+              } else {
+                if (window.flutterHandler) {
+                  window.flutterHandler.postMessage(
+                    JSON.stringify({
+                      subject: auth.subject,
+                      address: wallets[0].address,
+                    })
+                  );
+                  state.innerHTML = "Connected";
+                } else {
+                  state.innerHTML = `Connected!<br>${auth.subject}<br>${wallets[0].address}`;
+                }
+              }
+            });
           })
           .notAuthenticated((auth) => {
             venlyConnect.flows.authenticate({ windowMode: "REDIRECT" });
