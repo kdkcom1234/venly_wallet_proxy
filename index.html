@@ -6,6 +6,17 @@
     <title>Venly Wallet Proxy</title>
   </head>
   <body>
+    <div
+      style="
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <span>Connecting...</span>
+    </div>
     <script src="https://unpkg.com/@venly/connect@2.2.3/umd/index.js"></script>
     <script>
       (async () => {
@@ -19,10 +30,13 @@
         const result = await venlyConnect.checkAuthenticated();
         result
           .authenticated((auth) => {
+            const state = document.querySelector("div > span");
+
             if (window.flutterHandler) {
               window.flutterHandler.postMessage(JSON.stringify(auth));
+              state.innerHTML = "Connected";
             } else {
-              alert("logged in: " + JSON.stringify(auth));
+              state.innerHTML = `Connected!<br>${auth.subject}`;
             }
           })
           .notAuthenticated((auth) => {
