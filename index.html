@@ -24,6 +24,7 @@
           "41622395-4307-448c-9388-ac534ef5a823",
           {
             environment: "sandbox",
+            windowMode: "REDIRECT",
           }
         );
 
@@ -37,6 +38,7 @@
               state.innerHTML = "Connected";
             } else {
               state.innerHTML = `Connected!<br>${auth.subject}`;
+              venlyConnect.flows.manageWallets("BSC");
             }
           })
           .notAuthenticated((auth) => {
