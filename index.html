@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Venly Wallet Proxy</title>
+  </head>
+  <body>
+    <script src="https://unpkg.com/@venly/connect@2.2.3/umd/index.js"></script>
+    <script>
+      (() => {
+        const venlyConnect = new VenlyConnect(
+          "41622395-4307-448c-9388-ac534ef5a823",
+          {
+            environment: "sandbox",
+          }
+        );
+
+        venlyConnect.checkAuthenticated().then((result) => {
+          result
+            .authenticated((auth) => {
+              alert("logged in: " + auth.subject);
+            })
+            .notAuthenticated((auth) => {
+              venlyConnect.flows.authenticate({ windowMode: "REDIRECT" });
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>
