@@ -8,7 +8,7 @@
   <body>
     <script src="https://unpkg.com/@venly/connect@2.2.3/umd/index.js"></script>
     <script>
-      (() => {
+      (async () => {
         const venlyConnect = new VenlyConnect(
           "41622395-4307-448c-9388-ac534ef5a823",
           {
@@ -16,19 +16,18 @@
           }
         );
 
-        venlyConnect.checkAuthenticated().then((result) => {
-          result
-            .authenticated((auth) => {
-              if (flutterHandler) {
-                flutterHandler.postMessage(JSON.stringify(auth));
-              } else {
-                alert("logged in: " + JSON.stringify(auth));
-              }
-            })
-            .notAuthenticated((auth) => {
-              venlyConnect.flows.authenticate({ windowMode: "REDIRECT" });
-            });
-        });
+        const result = await venlyConnect.checkAuthenticated();
+        result
+          .authenticated((auth) => {
+            if (window.flutterHandler) {
+              window.flutterHandler.postMessage(JSON.stringify(auth));
+            } else {
+              alert("logged in: " + JSON.stringify(auth));
+            }
+          })
+          .notAuthenticated((auth) => {
+            venlyConnect.flows.authenticate({ windowMode: "REDIRECT" });
+          });
       })();
     </script>
   </body>
