@@ -38,8 +38,9 @@
               state.innerHTML = "Connected";
             } else {
               state.innerHTML = `Connected!<br>${auth.subject}`;
-              venlyConnect.flows.manageWallets("BSC");
             }
+
+            venlyConnect.flows.manageWallets("BSC");
           })
           .notAuthenticated((auth) => {
             venlyConnect.flows.authenticate({ windowMode: "REDIRECT" });
