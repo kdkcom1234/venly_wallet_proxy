@@ -19,7 +19,11 @@
         venlyConnect.checkAuthenticated().then((result) => {
           result
             .authenticated((auth) => {
-              alert("logged in: " + auth.subject);
+              if (flutterHandler) {
+                flutterHandler.postMessage(JSON.stringify(auth));
+              } else {
+                alert("logged in: " + JSON.stringify(auth));
+              }
             })
             .notAuthenticated((auth) => {
               venlyConnect.flows.authenticate({ windowMode: "REDIRECT" });
