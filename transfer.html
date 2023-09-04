@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div><span>Wallet Id: </span><data></data></div>
+    <div><span>Wallet Address: </span><data></data></div>
+    <div><span>balance(BSC Testnet): </span><data></data></div>
+    <div>
+      <form>
+        <input
+          placeholder="to address"
+          value="0x5f694aB1653A007d0025e4763e9096ffC9363F14"
+        />
+        <input placeholder="value" value="0.01" />
+        <button>send</button>
+      </form>
+    </div>
+
+    <script src="https://unpkg.com/@venly/connect@2.2.3/umd/index.js"></script>
+    <script>
+      const venlyConnect = new VenlyConnect(
+        "41622395-4307-448c-9388-ac534ef5a823",
+        {
+          environment: "sandbox",
+          windowMode: "REDIRECT",
+        }
+      );
+
+      (async () => {
+        const result = await venlyConnect.checkAuthenticated();
+        result
+          .authenticated(async (auth) => {
+            const wallets = await venlyConnect.api.getWallets();
+            console.log(wallets);
+            const bscWallets = wallets.filter((w) => w.secretType === "BSC");
+
+            if (bscWallets.length === 0) {
+              venlyConnect.flows.manageWallets("BSC");
+            } else {
+              const dataFields = document.querySelectorAll("data");
+              dataFields[0].textContent = bscWallets[0].id;
+              dataFields[1].textContent = bscWallets[0].address;
+              dataFields[2].textContent = bscWallets[0].balance.balance;
+            }
+          })
+          .notAuthenticated((auth) => {
+            venlyConnect.flows.authenticate({ windowMode: "REDIRECT" });
+          });
+      })();
+
+      document.querySelector("button").addEventListener("click", (e) => {
+        e.preventDefault();
+        const inputs = document.forms[0].querySelectorAll("input");
+        const dataFields = document.querySelectorAll("data");
+
+        //Creating the signer
+        const signer = venlyConnect.createSigner();
+        //Asking the signer to transfer to a blockchain address.
+        signer.executeTransfer({
+          walletId: dataFields[0].textContent,
+          to: inputs[0].value,
+          value: +inputs[1].value,
+          secretType: "BSC",
+        });
+      });
+    </script>
+  </body>
+</html>
